@@ -1,6 +1,5 @@
 @extends('layouts.master')
 
-
 @section('title')
     Show book
 @stop
@@ -16,12 +15,15 @@ such as a page specific styesheets.
 @stop
 
 
+
 @section('content')
-    @if($title)
-        <h1>Show book: {{ $title }}</h1>
+
+    @if(!isset($title))
+        You have not specified a book
     @else
-        <h1>No book chosen</h1>
+        <h1>Show book: {{ $title }}</h1>
     @endif
+
 @stop
 
 

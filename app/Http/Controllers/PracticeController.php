@@ -1,81 +1,85 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+class PracticeController extends Controller {
+    /*----------------------------------------------------
+    Examples 6-8 were from Lecture 11
+    -----------------------------------------------------*/
+    function getExample8() {
+        $book = \App\Book::with('author')->first();
+        dump($book->toArray());
+        echo $book->title.' was written by ';
+        //echo $book->author->first_name;
+        //echo $book->title.' was written by '.$book->author->first_name.' '.$book->author->last_name;
+	}
 
-Class PracticeController extends Controller {
-    //get results using search criteria
-    function getRetrieveBookUsingCriteriaWithEloquent() {
+    function getExample7() {
+        // Create author
+        $author = new \App\Author;
+        $author->first_name = 'J.K';
+        $author->last_name = 'Rowling';
+        $author->bio_url = 'https://en.wikipedia.org/wiki/J._K._Rowling';
+        $author->birth_year = '1965';
+        $author->save();
+        dump($author->toArray());
 
+        // Create book
+        $book = new \App\Book;
+        $book->title = "Harry Potter and the Philosopher's Stone";
+        $book->published = 1997;
+        $book->cover = 'http://prodimage.images-bn.com/pimages/9781582348254_p0_v1_s118x184.jpg';
+        $book->purchase_link = 'http://www.barnesandnoble.com/w/harrius-potter-et-philosophi-lapis-j-k-rowling/1102662272?ean=9781582348254';
+
+        $book->author()->associate($author); # <--- Associate the author with this book
+        //$book->author_id = $author->id;
+        $book->save();
+        dump($book->toArray());
+		return 'Added new book.';
+	}
+    function getExample6() {
+        // Query Responsibility
+	    $books = \App\Book::orderBy('id','DESC')->get();
+        $first = $books->first();
+        $last  = $books->last();
+        //$first = \App\Book::orderBy('id','ASC')->first();
+        //$last = \App\Book::orderBy('id','DESC')->first();
+        dump($books);
+        dump($first);
+        dump($last);
+	}
+    /*----------------------------------------------------
+    Examples 1-5 were from Lecture 10
+    -----------------------------------------------------*/
+    function getExample5() {
         $book = new \App\Book();
-        $results = $book->where('published', '<','1950')->get();
-        foreach($results as $result) {
-            echo $result->title.'<br>';
-        }
-
+        $harry_potter = $book->find(8);
+        $harry_potter->delete();
     }
-
-    // get first value from results
-    function getRetrieveFirstBookUsingCriteriaWithEloquent() {
-
-        $book = new \App\Book();
-        $results = $book->where('published', '<','1950')->first();
-        echo $results->title.'<br>';
-    }
-
-    // update book
-    function getUpdateBookWithEloquent() {
-
-        $book = new \App\Book();
-        $update_book = $book->find(1); // finding it by Book ID
-
-        $update_book->title='Green Eggs and Ham';
-        $update_book->save();
-        return 'getUpdateBookWithEloquent';
-    }
-
-    // delete book
-    function getDeleteBookWithEloquent() {
-
-        $book = new \App\Book();
-        $delete_book = $book->find(4); // finding it by Book ID
-
-        $delete_book-> delete();
-        return 'getDeleteBookWithEloquent';
-    }
-
-    // create book
-    function getCreateBookWithEloquent() {
-
+    function getExample4() {
         $book = new \App\Book();
         $book->title = 'Harry Potter';
-        $book->author = 'J.K. Rowling';
-        return 'getCreateBookWithEloquent';
+        $book->author = 'J.k Rowling';
+        $book->save();
+        return 'Example 4';
     }
-
-    function getBookWithEloquent() {
-        $book = new \App\Book();
-        $all_books = $book->all();
-
-        echo $book->all();
-        return 'getBookWithEloquent';
+    function getExample3() {
+        $books = new \App\Book();
+        $all_books = $books->all();
+        foreach($all_books as $book) {
+            echo $book->title.'<br>';
+        }
+        return 'Example 3';
     }
-
-    function getBooksWithQueryBuilder() {
-
+    function getExample2() {
+        // Equivalent to: SELECT * FROM books
         $books = \DB::table('books')->get();
         foreach($books as $book) {
             echo $book->title.'<br>';
         }
-        return 'getBooksWithQueryBuilder';
+        return 'Example 2';
     }
-
-    // Use the QueryBuilder to insert a new row into the books table
-    // i.e. create a new book
-    function getCreateNewBookWithQueryBuilder() {
-
+    function getExample1() {
         \DB::table('books')->insert([
             'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
             'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
@@ -85,8 +89,15 @@ Class PracticeController extends Controller {
             'cover' => 'http://img2.imagesbn.com/p/9780743273565_p0_v4_s114x166.JPG',
             'purchase_link' => 'http://www.barnesandnoble.com/w/the-great-gatsby-francis-scott-fitzgerald/1116668135?ean=9780743273565',
         ]);
-
-        return 'Entered new book';
+        return 'Example 1';
     }
-
+    function getExample0() {
+        $books = \App\Book::orderBy('id','ASC')->get();
+        //$first = \App\Book::orderBy('id','ASC')->first();
+        //$last =  \App\Book::orderBy('id','DESC')->first();
+        $first = $books->first();
+        $last  = $books->last();
+        dump($first->toArray());
+        dump($last->toArray());
+    }
 }

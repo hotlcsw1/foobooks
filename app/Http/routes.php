@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -10,48 +9,40 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-
-// Home route
-Route::get('/', function() {
-  return view('welcome');
-});
-
-// Routes from Debugbar
-Route::get('/practice', 'BookController@getPractice');
-
-// Index route
+# Reminder: 5 Route methods are: get, post, put, delete, or all
+/*----------------------------------------------------
+/books
+-----------------------------------------------------*/
+Route::get('/', 'BookController@getIndex');
 Route::get('/books', 'BookController@getIndex');
-
-// Show title route
 Route::get('/books/show/{title?}', 'BookController@getShow');
-
-// Create route
 Route::get('/books/create', 'BookController@getCreate');
-
-// Post create
 Route::post('/books/create', 'BookController@postCreate');
-
-// Practice controller
-Route::controller('/practice', 'PracticeController');
-
+Route::get('/books/edit/{id?}', 'BookController@getEdit');
+Route::post('/books/edit', 'BookController@postEdit');
+# Alternative to the above, using implicit Controller routing
+//Route::controller('/books','BookController');
+/*----------------------------------------------------
+/practice
+-----------------------------------------------------*/
+Route::controller('/practice','PracticeController');
+/*----------------------------------------------------
+Debugging/Local/Misc
+-----------------------------------------------------*/
 if(App::environment('local')) {
-    Route::get('logs',            '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+    Route::get('/drop', function() {
+        DB::statement('DROP database foobooks');
+        DB::statement('CREATE database foobooks');
+        return 'Dropped foobooks; created foobooks.';
+    });
 };
-
-// Log viewer route
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-
-// Debug route for database
 Route::get('/debug', function() {
-
     echo '<pre>';
-
     echo '<h1>Environment</h1>';
     echo App::environment().'</h1>';
-
     echo '<h1>Debugging?</h1>';
     if(config('app.debug')) echo "Yes"; else echo "No";
-
     echo '<h1>Database Config</h1>';
     /*
     The following line will output your MySQL credentials.
@@ -61,7 +52,6 @@ Route::get('/debug', function() {
     running on your live server, making your credentials public.
     */
     //print_r(config('database.connections.mysql'));
-
     echo '<h1>Test Database Connection</h1>';
     try {
         $results = DB::select('SHOW DATABASES;');
@@ -72,7 +62,5 @@ Route::get('/debug', function() {
     catch (Exception $e) {
         echo '<strong style="background-color:crimson; padding:5px;">Caught exception: ', $e->getMessage(), "</strong>\n";
     }
-
     echo '</pre>';
-
 });
